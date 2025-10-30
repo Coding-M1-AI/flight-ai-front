@@ -1,0 +1,74 @@
+.datepicker { position: relative; width: 100%; }
+.datepicker-label { margin-bottom: 0.4rem; font-weight: 500; }
+.date-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  background: #1a1a1a;
+  color: inherit;
+}
+.date-trigger:focus { outline: none; border-color: #646cff; box-shadow: 0 0 0 3px rgba(100,108,255,0.25); }
+.date-trigger-icon { opacity: 0.8; }
+
+.datepicker-popover {
+  position: absolute;
+  z-index: 20;
+  margin-top: 0.5rem;
+  width: 100%;
+  max-width: min(320px, calc(100vw - 2rem));
+  box-sizing: border-box;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  padding: 0.4rem;
+}
+.datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.2rem 0.4rem 0.2rem;
+}
+.datepicker-header .nav {
+  background: transparent;
+  border: 1px solid #3a3a3a;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  color: inherit;
+}
+.current-month { font-weight: 600; }
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.2rem;
+  padding: 0 0.2rem 0.2rem 0.2rem;
+  color: #9aa0a6;
+  font-size: 0.85rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.2rem;
+  padding: 0 0.2rem 0.2rem 0.2rem;
+}
+.cell { height: 2.1rem; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+.cell.empty { opacity: 0.2; }
+.cell.day { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; }
+.cell.day:hover { border-color: #646cff; }
+.cell.day.selected { background: #2a2a5f; border-color: #747bff; }
+
+@media (max-width: 420px) {
+  .weekday-row { font-size: 0.8rem; }
+  .cell { height: 1.9rem; }
+  .grid { gap: 0.18rem; }
+}
+
+
+
