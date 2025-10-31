@@ -3,12 +3,15 @@ import './App.css'
 import { estimateDelay, type DelayEstimateResponse } from './services/delayEstimator'
 import DatePicker2015 from './components/DatePicker2015'
 import type { Airport } from './types'
-import { AIRLINES } from './constants/airlines'
-import { loadUsAirports } from './utils/airports'
+import { loadAirlines, type Airline } from './services/airlines'
+import { loadAirports } from './services/airports'
 
 function App() {
   const [date, setDate] = useState<string>('2015-06-15')
   const [airports, setAirports] = useState<Airport[]>([])
+  const [airlines, setAirlines] = useState<Airline[]>([])
+  const [isLoadingAirports, setIsLoadingAirports] = useState<boolean>(true)
+  const [isLoadingAirlines, setIsLoadingAirlines] = useState<boolean>(true)
   const [departure, setDeparture] = useState<string>('JFK')
   const [arrival, setArrival] = useState<string>('LAX')
   const [airline, setAirline] = useState<string>('UA')
@@ -17,13 +20,28 @@ function App() {
   const [result, setResult] = useState<DelayEstimateResponse | null>(null)
 
   useEffect(() => {
-    loadUsAirports()
-      .then((unique) => {
-        setAirports(unique)
-        if (unique.find((a) => a.code === 'JFK')) setDeparture('JFK')
-        if (unique.find((a) => a.code === 'LAX')) setArrival('LAX')
+    setIsLoadingAirports(true)
+    loadAirports()
+      .then((list) => {
+        setAirports(list)
+        if (list.find((a) => a.code === 'JFK')) setDeparture('JFK')
+        if (list.find((a) => a.code === 'LAX')) setArrival('LAX')
+        if (!list.find((a) => a.code === 'JFK') && list[0]) setDeparture(list[0].code)
+        if (!list.find((a) => a.code === 'LAX') && list[1]) setArrival(list[1].code)
       })
       .catch(() => {})
+      .finally(() => setIsLoadingAirports(false))
+  }, [])
+
+  useEffect(() => {
+    setIsLoadingAirlines(true)
+    loadAirlines()
+      .then((list) => {
+        setAirlines(list)
+        if (list.find((a) => a.code === 'UA')) setAirline('UA')
+      })
+      .catch(() => {})
+      .finally(() => setIsLoadingAirlines(false))
   }, [])
 
   async function onSubmit(e: React.FormEvent) {
@@ -56,11 +74,22 @@ function App() {
     </option>
   ))
 
-  const airlineOptions = AIRLINES.map((a) => (
+  const airlineOptions = airlines.map((a) => (
     <option key={a.code} value={a.code}>
       {a.code} — {a.name}
     </option>
   ))
+
+  if (isLoadingAirports || isLoadingAirlines) {
+    // Use same background as page by reading from computed styles via CSS var
+    document.documentElement.style.setProperty('--app-bg', getComputedStyle(document.documentElement).backgroundColor)
+    return (
+      <div className="fullscreen-loader">
+        <div className="spinner" />
+        <div>Chargement des données…</div>
+      </div>
+    )
+  }
 
   return (
     <div className="wrapper">
