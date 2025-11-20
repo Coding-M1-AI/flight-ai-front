@@ -5,6 +5,7 @@ import { estimateDelay, type DelayEstimateResponse } from './services/delayEstim
 import type { Airport } from './types'
 import { loadAirlines, type Airline } from './services/airlines'
 import { loadAirports, loadDestinations } from './services/airports'
+import { explainPrediction, type ExplainResponse } from './services/explainer'
 
 function App() {
   const [date, setDate] = useState<string>('2015-06-15')
@@ -21,6 +22,9 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<DelayEstimateResponse | null>(null)
+  const [explanation, setExplanation] = useState<ExplainResponse | null>(null)
+  const [isLoadingExplanation, setIsLoadingExplanation] = useState<boolean>(false)
+  const [showExplanation, setShowExplanation] = useState<boolean>(false)
 
   useEffect(() => {
     setIsLoadingAirports(true)
@@ -80,6 +84,8 @@ function App() {
     setIsLoading(true)
     setError(null)
     setResult(null)
+    setExplanation(null)
+    setShowExplanation(false)
     try {
       const dt = new Date(date + 'T00:00:00')
       const month = dt.getUTCMonth() + 1
@@ -100,6 +106,33 @@ function App() {
       setError('Une erreur est survenue. Réessayez.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function onExplain() {
+    setIsLoadingExplanation(true)
+    setError(null)
+    try {
+      const dt = new Date(date + 'T00:00:00')
+      const month = dt.getUTCMonth() + 1
+      const dayOfWeek = dt.getUTCDay() === 0 ? 7 : dt.getUTCDay()
+      const scheduledDeparture = parseInt(departureTime.replace(':', ''), 10)
+
+      const data = await explainPrediction({
+        AIRLINE: airline,
+        ORIGIN_AIRPORT: departure,
+        DESTINATION_AIRPORT: arrival,
+        MONTH: month,
+        DAY_OF_WEEK: dayOfWeek,
+        SCHEDULED_DEPARTURE: scheduledDeparture,
+        DISTANCE: distance,
+      })
+      setExplanation(data)
+      setShowExplanation(true)
+    } catch (err) {
+      setError('Erreur lors de la génération de l\'explication. Réessayez.')
+    } finally {
+      setIsLoadingExplanation(false)
     }
   }
 
@@ -196,6 +229,34 @@ function App() {
           <div className="context">
             {date} {departureTime} — {departure} ➜ {arrival} — {airline}
           </div>
+          <button 
+            type="button" 
+            onClick={onExplain} 
+            disabled={isLoadingExplanation}
+            className="explain-button"
+          >
+            {isLoadingExplanation ? 'Génération de l\'explication…' : '📊 Expliquer la prédiction'}
+          </button>
+        </div>
+      )}
+
+      {showExplanation && explanation && (
+        <div className="explanation">
+          <h2>Explication de la prédiction (SHAP)</h2>
+          <p>Ce graphique montre l'impact de chaque caractéristique sur la prédiction du retard :</p>
+          <div className="explanation-image">
+            <img 
+              src={`data:image/png;base64,${explanation.image_base64}`} 
+              alt="SHAP Explanation" 
+            />
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setShowExplanation(false)}
+            className="close-button"
+          >
+            Fermer
+          </button>
         </div>
       )}
     </div>

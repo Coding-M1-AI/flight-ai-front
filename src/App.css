@@ -165,3 +165,77 @@
 }
 
 /* DatePicker styles moved to components/DatePicker2015.css */
+
+.explain-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.explain-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+
+.explain-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.explanation {
+  margin-top: 2rem;
+  padding: 2rem;
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  max-width: 900px;
+  width: 100%;
+  text-align: left;
+}
+
+.explanation h2 {
+  margin-top: 0;
+  color: #667eea;
+}
+
+.explanation p {
+  color: #9aa0a6;
+  margin-bottom: 1rem;
+}
+
+.explanation-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  overflow: auto;
+}
+
+.explanation-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.close-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background: #3a3a3a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.close-button:hover {
+  background: #4a4a4a;
+}
