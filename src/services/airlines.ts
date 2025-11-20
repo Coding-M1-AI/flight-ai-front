@@ -8,7 +8,7 @@ type ApiAirline = {
   airline_name: string;
 };
 
-export async function loadAirlines(apiBase: string = 'http://localhost:8000'): Promise<Airline[]> {
+export async function loadAirlines(apiBase: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'): Promise<Airline[]> {
   const url = `${apiBase}/api/v1/airlines`;
   const response = await fetch(url);
   if (!response.ok) {

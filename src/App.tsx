@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { getDistanceInMiles } from './utils/distance'
 import { estimateDelay, type DelayEstimateResponse } from './services/delayEstimator'
-import DatePicker2015 from './components/DatePicker2015'
 import type { Airport } from './types'
 import { loadAirlines, type Airline } from './services/airlines'
-import { loadAirports } from './services/airports'
+import { loadAirports, loadDestinations } from './services/airports'
 
 function App() {
   const [date, setDate] = useState<string>('2015-06-15')
   const [airports, setAirports] = useState<Airport[]>([])
+  const [availableDestinations, setAvailableDestinations] = useState<Airport[]>([])
   const [airlines, setAirlines] = useState<Airline[]>([])
   const [isLoadingAirports, setIsLoadingAirports] = useState<boolean>(true)
   const [isLoadingAirlines, setIsLoadingAirlines] = useState<boolean>(true)
@@ -46,6 +46,24 @@ function App() {
       .catch(() => {})
       .finally(() => setIsLoadingAirlines(false))
   }, [])
+
+  useEffect(() => {
+    if (departure) {
+      loadDestinations(departure)
+        .then((destinations) => {
+          setAvailableDestinations(destinations)
+          if (destinations.length > 0) {
+            const isCurrentArrivalValid = destinations.find((a) => a.code === arrival)
+            if (!isCurrentArrivalValid) {
+              setArrival(destinations[0].code)
+            }
+          }
+        })
+        .catch(() => {
+          setAvailableDestinations([])
+        })
+    }
+  }, [departure])
 
   useEffect(() => {
     const departureAirport = airports.find((a) => a.code === departure)
@@ -91,6 +109,12 @@ function App() {
     </option>
   ))
 
+  const destinationOptions = availableDestinations.map((a) => (
+    <option key={a.code} value={a.code}>
+      {a.code} — {a.name}
+    </option>
+  ))
+
   const airlineOptions = airlines.map((a) => (
     <option key={a.code} value={a.code}>
       {a.code} — {a.name}
@@ -123,7 +147,7 @@ function App() {
           <label className="grow">
             Aéroport de destination
             <select value={arrival} onChange={(e) => setArrival(e.target.value)}>
-              {airportOptions}
+              {availableDestinations.length > 0 ? destinationOptions : airportOptions}
             </select>
           </label>
         </div>
@@ -140,7 +164,13 @@ function App() {
         <div className="row">
           <label>
             Date de départ (2015)
-            <DatePicker2015 value={date} onChange={setDate} />
+            <input 
+              type="date" 
+              value={date} 
+              onChange={(e) => setDate(e.target.value)} 
+              min="2015-01-01" 
+              max="2015-12-31"
+            />
           </label>
           <label>
             Heure de départ

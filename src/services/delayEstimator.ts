@@ -14,10 +14,9 @@ export type DelayEstimateResponse = {
   using_model: boolean;
 };
 
-// Real API call to backend prediction endpoint
 export async function estimateDelay(
   payload: DelayEstimateRequest,
-  apiBase: string = 'http://localhost:8000',
+  apiBase: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
 ): Promise<DelayEstimateResponse> {
   const url = `${apiBase}/api/v1/predict-booking`;
   const response = await fetch(url, {
