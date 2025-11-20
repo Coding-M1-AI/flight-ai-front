@@ -20,7 +20,7 @@ export async function loadAirports(apiBase: string = 'http://localhost:8000'): P
   // Keep only USA if you want to mirror previous behavior; otherwise return all
   return data
     .filter((a) => a.iata_code && a.airport_name)
-    .map((a) => ({ code: a.iata_code, name: a.airport_name }))
+    .map((a) => ({ code: a.iata_code, name: a.airport_name, lat: a.latitude, lon: a.longitude }))
 }
 
 
